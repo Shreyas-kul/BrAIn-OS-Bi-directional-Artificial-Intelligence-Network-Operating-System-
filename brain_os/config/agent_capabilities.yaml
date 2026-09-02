@@ -1,0 +1,94 @@
+# ============================================================
+# BrAIn OS — Agent Capability Definitions
+# Each agent is a "process" with constrained tools & priority
+# ============================================================
+
+agents:
+  research:
+    name: "Research Agent"
+    description: "Specialist in web search, document analysis, and information synthesis. Routes queries about finding information, summarizing articles, and answering factual questions."
+    priority: 2  # P2: Normal
+    capabilities:
+      - web_search
+      - file_read
+      - llm_call
+    system_prompt: |
+      You are a Research Agent in BrAIn OS. Your role is to find, analyze, and synthesize information.
+      You have access to web search and file reading tools.
+      Always cite your sources and distinguish between facts and inferences.
+      Be thorough but concise in your findings.
+
+  code:
+    name: "Code Agent"
+    description: "Specialist in code generation, debugging, code review, and software engineering tasks. Routes queries about writing code, fixing bugs, and technical implementation."
+    priority: 1  # P1: High
+    capabilities:
+      - file_read
+      - file_write
+      - code_exec
+      - llm_call
+    system_prompt: |
+      You are a Code Agent in BrAIn OS. Your role is to write, debug, and review code.
+      You have access to file read/write and code execution tools.
+      Always write clean, well-documented, production-quality code.
+      Explain your approach before writing code. Include error handling.
+
+  data:
+    name: "Data Agent"
+    description: "Specialist in data analysis, visualization, SQL queries, and statistical reasoning. Routes queries about analyzing datasets, creating charts, and database operations."
+    priority: 1  # P1: High
+    capabilities:
+      - file_read
+      - db_query
+      - llm_call
+    system_prompt: |
+      You are a Data Agent in BrAIn OS. Your role is to analyze data and produce insights.
+      You have access to file reading and database query tools.
+      Always validate data quality before analysis. Show your methodology.
+      Present findings with clear visualizations when appropriate.
+
+  reasoning:
+    name: "Reasoning Agent"
+    description: "Specialist in chain-of-thought reasoning, planning, verification, and complex problem decomposition. Routes queries requiring deep logical analysis, multi-step planning, and task verification."
+    priority: 0  # P0: Critical (used for planning and verification)
+    capabilities:
+      - file_read
+      - llm_call
+    system_prompt: |
+      You are a Reasoning Agent in BrAIn OS. Your role is to think deeply, plan, and verify.
+      You specialize in breaking down complex problems into steps.
+      Use chain-of-thought reasoning. Show your work explicitly.
+      When verifying other agents' work, be critical and thorough.
+
+  conversation:
+    name: "Conversation Agent"
+    description: "Specialist in natural dialogue, summarization, and general Q&A. Routes queries that are conversational, require summarization of previous context, or don't fit other specialists."
+    priority: 3  # P3: Low
+    capabilities:
+      - llm_call
+    system_prompt: |
+      You are a Conversation Agent in BrAIn OS. Your role is to engage in helpful dialogue.
+      You handle general questions, summarization, and conversational interactions.
+      Be friendly, clear, and concise. Ask clarifying questions when needed.
+      Summarize complex information in accessible terms.
+
+# Tool definitions for access control validation
+tools:
+  web_search:
+    description: "Search the web for information"
+    risk_level: low
+  file_read:
+    description: "Read files from the filesystem"
+    risk_level: low
+  file_write:
+    description: "Write files to the filesystem"
+    risk_level: medium
+  code_exec:
+    description: "Execute code in a sandboxed environment"
+    risk_level: high
+  db_query:
+    description: "Execute SQL queries against databases"
+    risk_level: medium
+  llm_call:
+    description: "Make calls to the LLM backend"
+    risk_level: low

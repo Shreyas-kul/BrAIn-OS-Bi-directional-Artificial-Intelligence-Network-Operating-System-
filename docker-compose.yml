@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  # --- BrAIn OS Kernel & Gateway ---
+  brain-os:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brain-os-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - LLM_DEFAULT_BACKEND=ollama
+      - API_HOST=0.0.0.0
+      - API_PORT=8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+      - chromadb
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+
+  # --- Redis (L2 Memory, Sessions, IPC) ---
+  redis:
+    image: redis:7-alpine
+    container_name: brain-os-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
+  # --- ChromaDB (L3 Persistent Vector Store) ---
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: brain-os-chroma
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+
+volumes:
+  redis_data:
+  chroma_data:
